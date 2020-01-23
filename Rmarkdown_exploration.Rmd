@@ -1,0 +1,31 @@
+---
+title: "rmardown_exploration"
+authors: "Melissa Cloutier"
+date: Last updates `r format(Sys.time(), "%d $B, %Y")`
+output:
+  html_document:
+    theme: Cerulean
+    toc: TRUE
+---
+
+``` {r}
+ #install.packages("gapminder")
+ #install.packages("DT")
+ #install.packages("tibble")
+```
+The mean difference was `r mean(mtcars$mpg)`
+```{r}
+ library(gapminder)
+
+```
+```{r mtcars view, echo=FALSE}
+mtcars
+```
+
+mtcars is a dataset describing the features of old cars. It has 7 variables
+
+``` {r}
+mtcars['mpg']
+mean(mtcars$mpg)
+unique(mtcars$cyl)
+```
