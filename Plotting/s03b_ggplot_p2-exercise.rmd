@@ -136,7 +136,7 @@ Fix the plot so that you can actually see the data points.
 
 There is also the problem of overlapping text in the x-axis labels. How could we solve that?
 
-```{r, fig.width = 5, fig.height = 2}
+```{r, fig.width = 10, fig.height = 2}
 gapminder %>% 
   filter(continent == "Americas") %>% 
   ggplot(aes(country, lifeExp)) + 
