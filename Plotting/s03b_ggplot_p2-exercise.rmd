@@ -86,14 +86,17 @@ ggplot(gapminder, aes(gdpPercap, lifeExp)) +
     but that is not optimal for perception).
 - Use `shape=21` to distinguish between `fill` (interior) and `color` (exterior). 
 
+Bubble plot formula from: https://www.r-graph-gallery.com/320-the-basis-of-bubble-plot.html
 ```{r, fig.width = 5, fig.height = 2}
 gapminder %>% 
   filter(continent != "Oceania") %>% 
-  ggplot(aes(gdpPercap, lifeExp)) +
+  ggplot(aes(x = gdpPercap, y = lifeExp, size = pop)) +
   facet_wrap(~ continent) +
   geom_point(alpha = 0.2) +
-  scale_x_log10(labels = scales::comma_format())
+  scale_x_log10(labels = scales::comma_format()) +
+  scale_size(range = c(.1, 24), name = "Population")
 ```
+
 
 A list of shapes can be found [at the bottom of the `scale_shape` documentation](https://ggplot2.tidyverse.org/reference/scale_shape.html).
 
@@ -101,9 +104,11 @@ A list of shapes can be found [at the bottom of the `scale_shape` documentation]
 
 Instead of alpha transparency, suppose you're wanting to fix the overplotting issue by plotting small points. Why is this not working? Fix it.
 
+Shape formula from : https://ggplot2.tidyverse.org/reference/geom_point.html
+
 ```{r, fig.width = 5, fig.height = 2}
 ggplot(gapminder) +
-  geom_point(aes(gdpPercap, lifeExp, size = 0.1)) +
+  geom_point(aes(gdpPercap, lifeExp, shape = "0.1")) +
   scale_x_log10(labels = scales::dollar_format())
 ```
 
@@ -125,7 +130,8 @@ tribble(
   4, 0.4, 0.5
 ) %>% 
   ggplot(aes(x, y)) + 
-  geom_line()
+  geom_path(arrow = arrow()) +
+  geom_text(aes(label = time))
 ```
 
 ## Exercise 5: Life expectancies in Africa
@@ -142,6 +148,7 @@ gapminder %>%
   ggplot(aes(country, lifeExp)) + 
   geom_point() +
   geom_boxplot() +
+  geom_jitter() +
   scale_x_discrete()
 ```
 
@@ -153,8 +160,7 @@ We're starting with the same plot as above, but instead of the points + boxplot,
 gapminder %>% 
   filter(continent == "Americas") %>% 
   ggplot(aes(country, lifeExp)) + 
-  geom_point() +
-  geom_boxplot()
+  ggridges::geom_density_ridges(lifeExp)
 ```
 
 ## Exercise 6: Bar plot madness
@@ -172,7 +178,7 @@ gapminder %>%
 mtcars %>% 
   mutate(transmission = if_else(am == 0, "automatic", "manual")) %>% 
   ggplot(aes(cyl)) +
-  geom_bar(aes(color = transmission))
+  geom_bar(aes(y = _proportion_, color = transmission))
 ```
 
 ### 6(b) Bar heights already calculated
@@ -188,7 +194,7 @@ Fix the following bar plot so that it shows these counts.
 
 ```{r}
 ggplot(hair, aes(Hair, n)) +
-  geom_bar()
+  geom_col()
 ```
 
 ## Exercise 7: Tiling
@@ -205,7 +211,7 @@ _Hint:_ What's the title of this exercise?
 
 ```{r}
 ggplot(hair_eye, aes(Hair, Eye)) +
-  geom_point(aes(colour = n))
+  geom_tile(aes(fill = n), colour = "grey50")
 ```
 
 By the way, `geom_count()` is like `geom_bar()`: it counts the number of overlapping points.
