@@ -44,7 +44,8 @@ or `size` argument (attribution: ["R for data science"](https://r4ds.had.co.nz/d
 
 ```{r, fig.width = 5, fig.height = 2}
 ggplot(mpg, aes(cty, hwy)) + 
-  geom_point(alpha = .05)
+  geom_jitter(alpha = .05, size = 1) 
+ 
 ```
 
 
@@ -90,7 +91,7 @@ Bubble plot formula from: https://www.r-graph-gallery.com/320-the-basis-of-bubbl
 ```{r, fig.width = 5, fig.height = 2}
 gapminder %>% 
   filter(continent != "Oceania") %>% 
-  ggplot(aes(x = gdpPercap, y = lifeExp, size = pop)) +
+  ggplot(aes(x = gdpPercap, y = lifeExp, size = pop, fill = continent)) +
   facet_wrap(~ continent) +
   geom_point(alpha = 0.2) +
   scale_x_log10(labels = scales::comma_format()) +
@@ -159,8 +160,8 @@ We're starting with the same plot as above, but instead of the points + boxplot,
 ```{r, fig.width = 5, fig.height = 2}
 gapminder %>% 
   filter(continent == "Americas") %>% 
-  ggplot(aes(country, lifeExp)) + 
-  ggridges::geom_density_ridges(lifeExp)
+  ggplot(aes(lifeExp, country)) + 
+  ggridges::geom_density_ridges()
 ```
 
 ## Exercise 6: Bar plot madness
@@ -177,8 +178,9 @@ gapminder %>%
 ```{r, fig.width = 5, fig.height = 2}
 mtcars %>% 
   mutate(transmission = if_else(am == 0, "automatic", "manual")) %>% 
-  ggplot(aes(cyl)) +
-  geom_bar(aes(y = _proportion_, color = transmission))
+  ggplot(aes(cyl, ..prop..)) +
+  geom_bar(aes(fill = Transmission), position = "dodge") +
+  scale_x_continuous(breaks = c(4, 6, 8))
 ```
 
 ### 6(b) Bar heights already calculated
