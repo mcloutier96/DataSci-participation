@@ -1,0 +1,145 @@
+---
+title: "Topic 9"
+author: "Melissa Cloutier"
+date: "3/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+install.packages("haven")
+```
+
+```{r}
+library(tidyverse)
+library(gapminder)
+library(here)
+library(haven)
+library(ggridges)
+```
+
+```{r}
+(gap_asia_2007 <- gapminder %>% filter(year == 2007, continent == "Asia"))
+```
+
+```{r}
+write_csv(gap_asia_2007, "exported_file.csv") 
+```
+write to format(save this data table with this name)
+
+What is the working directory?
+```{r}
+getwd()
+```
+
+Change working directory (DONT USE THIS):
+
+```{r}
+setwd(file.path("path", "to", "folder"))
+```
+
+
+Don't run this code but is still included (eval = FALSE is what we need)
+```{r install, eval = FALSE}
+install.packages(WHATEVER PACKAGE)
+```
+
+Opens file directory for you to select the file
+```{r}
+file.choose()
+```
+
+
+Create a file path
+```{r}
+file.path("folder", "data file.csv")
+```
+
+
+Write csv to a folder within a folder (folder 1, folder 2, name of file)
+```{r}
+write_csv(gap_asia_2007, here::here("data", "s008_data", "exported_file.csv"))
+```
+
+
+Read csv from a folder within a folder (folder 1, folder 2, name of file). THis can be assigned to an object to be able to manipulate it
+```{r}
+read_csv(here::here("data", "s008_data", "exported_file.csv"))
+```
+
+Change na values in csv read
+```{r}
+read_csv(folder, data, na = c("", "NA", "etc"))
+```
+
+Import file from internet
+```{r}
+url <- "http://gattonweb.uky.edu/sheather/book/docs/datasets/magazines.csv"
+```
+
+Read imported file as csv
+```{r}
+read_csv(url)
+```
+
+Create a directory, if it exist, no problem, if it doesnt, creates all folder
+```{r}
+dir.create(here::here("data", "s008_data"), recursive = TRUE)
+```
+
+
+Download any file from internet (mode = wb prevents corrupt file)
+```{r}
+xls_url <- "http://gattonweb.uky.edu/sheather/book/docs/datasets/GreatestGivers.xls"
+download.file(xls_url, here::here("data", "s008_data", "some_file.xls"), mode = "wb")
+```
+
+Read SPSS files
+```{r}
+(clevel <- haven::read_spss(here::here("data", "s008_data", "clevel.sav")))
+```
+
+Create nominal into factors
+```{r}
+clevel_cleaned <-
+  clevel %>% 
+  mutate(language = as_factor(language),
+         gender = as_factor(gender),
+         isClevel = factor(isClevel, 
+                           levels = c(0, 1), 
+                           labels = c("No", "Yes"))
+  ) %>% 
+  print()
+```
+
+Saved dataset
+```{r}
+write_csv(clevel_cleaned, here::here("data", "s008_data", "clevel_cleaned.csv"))
+```
+
+```{r}
+clevel_plot <-
+  clevel_cleaned %>% 
+  mutate(isClevel = recode(isClevel, 
+                           No = "Below C-level", 
+                           Yes = "C-level"),
+         gender = recode(gender,
+                         Female = "Women",
+                         Male = "Men")) %>% 
+  ggplot(aes(paste(isClevel, gender, sep = "\n"), Extraversion, color = gender)) +
+  geom_boxplot() +
+  geom_jitter(height = .2) +
+  scale_color_manual(values = c("#1b9e77", "#7570b3")) +
+  ggtitle("Extraversion Stan Scores") +
+  scale_y_continuous(breaks = 1:9) +
+  ggthemes::theme_fivethirtyeight()
+  print(clevel_plot)
+```
+
+```{r}
+dir.create(here::here("output", "figures"), recursive = TRUE)
+ggsave(here::here("output", "figures", "clevel_extraversion.svg"), clevel_plot)
+```
+
